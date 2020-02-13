@@ -4,37 +4,37 @@ import { getUser, logout, login } from '../API.js'
 const Auth = () => {
 
   const [user, setUser] = useState('');
-  const [auth, setAuth] = useState(0);
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     getUser()
       .then(res => res.json())
       .then(setUser)
-  }, [auth]);
+  }, [user.method]);
 
   async function handleLogout(e) {
     setIsLoading(true);
     const response = await logout();
-    setAuth(0);
+    setUser(response);
     setIsLoading(false);
   }
 
   async function handleLogin(e) {
     setIsLoading(true);
     const response = await login();
-    setAuth(1);
+    getUser().then(res => res.json())
+      .then(user => setUser(user));
     setIsLoading(false);
   }
 
   return (
-    auth === 1 ? (
+    user.method ? (
       <div className="container">
         <h1>Hi {user.email} !</h1>
         <button className="info" onClick={(e) => handleLogout(e)}>Logout</button>
       </div >
     )
-      : auth === 0 && isLoading === false ? (
+      : user.method === undefined && isLoading === false ? (
         <div className="container">
           <br />
           <button className="info" onClick={(e) => handleLogin(e)}>Sign in with Google</button>
